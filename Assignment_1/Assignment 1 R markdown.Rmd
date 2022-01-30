@@ -1,0 +1,103 @@
+---
+title: "Assignment 1"
+author: "Kevin Gardner"
+date: "1/30/2022"
+output: word_document
+---
+# ------------------------------------------------
+# Following is the link to my GitHub account:
+# https://github.com/Kgardner22/64060_-kgardner
+# ------------------------------------------------
+
+
+# 1. Download a dataset from the web. 
+# My data source is Kaggle. Following are the details:
+#     House Prices – Advanced Regression Techniques
+#     Predict sales prices and practice feature engineering, RFs, and gradient boosting
+# 
+# https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data
+
+
+# 2. Import the dataset into R
+
+```{r}
+  House_Prices_train <- read.csv("C:/R/MyData/House_Prices_train.csv", header=TRUE)
+```
+
+# 3. Print out descriptive statistics for a selection of quantitative and categorical variables.
+
+```{r}  
+# The summary command will show a variety of descriptive statistics for each variable in the data set including the minimum, 1st quartile, median, mean, 3rd quartile, maximum values and if any NAs are present
+
+  summary(House_Prices_train)
+```
+
+# Following are individual descriptive statistics for quantitative variables:
+
+```{r}  
+  mean(House_Prices_train$SalePrice)  # Mean Sale Price
+```
+```{r}  
+  median(House_Prices_train$SalePrice) # Median Sale Price
+```
+```{r}  
+  sd(House_Prices_train$SalePrice) # Standard Deviation of Sale Price
+```
+```{r}  
+  min(House_Prices_train$SalePrice) # Minimum Sale Price
+```
+```{r}  
+  max(House_Prices_train$SalePrice) # Maximum Sale Price
+```
+
+# Following are descriptive statistics for categorical variables:
+```{r}  
+  table(House_Prices_train$Street) # shows the frequency of homes located on gravel streets vs paved streets
+```
+```{r}  
+  table(House_Prices_train$CentralAir) # shows the frequency of homes with and without central air
+```
+```{r}  
+  table(House_Prices_train$CentralAir, House_Prices_train$Electrical) # cross classification of homes with and without central air (Y/N) and the type of electrical for the home (fuse box, electrical)
+```
+
+# To show the percentage of the frequency for each value in a specific categorical variable (such as SaleCondition)
+```{r}
+  table1 <- table(House_Prices_train$SaleCondition)
+  prop.table(table1)
+```  
+
+# 4. Transform at least one variable. It doesn’t matter what the transformation is.
+```{r}
+  House_Prices_train$SalePrice_Transformed <- (House_Prices_train$SalePrice - mean(House_Prices_train$SalePrice))/sd(House_Prices_train$SalePrice)
+
+  
+# Create a new variable for total square feet (TotalLivingSF) which is the square footage of the 1st and 2nd floor combined:
+  
+  House_Prices_train$TotalLivingSF <- (House_Prices_train$X1stFlrSF + House_Prices_train$X2ndFlrSF)
+```
+
+# 5. Plot at least one quantitative variable, and one scatterplot.
+```{r}
+# Show histogram of SalePrice
+  
+  hist(House_Prices_train$SalePrice)
+```
+```{r}
+# We could also add color to the Histogram to improve the visualization
+
+  hist(House_Prices_train$SalePrice, col = blues9)
+```
+
+```{r}
+# Show scatterplot of sales price (SalePrice) to total square footage (TotalLivingSF):
+  
+  plot(House_Prices_train$SalePrice, House_Prices_train$TotalLivingSF)
+```  
+```{r}
+# We can add color to the scatterplot as well to improve the visualization
+
+  plot(House_Prices_train$SalePrice, House_Prices_train$TotalLivingSF, col = blues9)
+```
+
+
