@@ -34,19 +34,22 @@ Original_File <- UniversalBank
 REQUIREMENT 1:
 
 Transform categorical predictors with more than two categories into dummy variables FIRST.
-Need to do this for Education
+Need to do this for 'Education' and 'Personal.Loan'.
 
 ```{r}
 
 library(caret)
 library(class)
 
+# Remove unnecessary attributes
 UniversalBank$ID <- NULL
 UniversalBank$ZIP.Code <- NULL
 
+# Transform to factors
 UniversalBank$Education=as.factor(UniversalBank$Education)
 UniversalBank$Personal.Loan=as.factor(UniversalBank$Personal.Loan)
 
+# Use dummyVars function to create a model
 dummies <- dummyVars(Personal.Loan ~ ., data = UniversalBank)
 UniversalBank_dummy <- as.data.frame(predict(dummies, newdata = UniversalBank))
 
@@ -170,7 +173,7 @@ Consider the following customer: Age = 40, Experience = 10, Income = 84, Family 
 
 ```{r}
 
-# The independent variables specified in this requirement (4) is the same as those specified in requirement 1. Therefore, this data.frame is already build and normalized (To_Predict_norm).
+# The independent variables specified in this requirement are the same as those specified in requirement 1. Therefore, this data.frame is already build and normalized (To_Predict_norm).
 
 print(To_Predict)
 
