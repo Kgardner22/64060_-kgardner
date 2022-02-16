@@ -1,0 +1,190 @@
+---
+title: "Assignment 2"
+author: "Kevin Gardner"
+date: "2/15/2022"
+output:
+  word_document: default
+  html_document: default
+---
+
+# ------------------------------------------------
+# Following is the link to my GitHub account:
+# https://github.com/Kgardner22/64060_-kgardner
+# ------------------------------------------------
+
+Import and Prepare Data:
+  
+Import the UniversalBank.csv file  
+
+```{r}
+
+UniversalBank <- read.table('C:/R/MyData/UniversalBank.csv', header = T, sep = ',') 
+
+summary(UniversalBank)
+
+```
+Create a copy of the original data file to preserve
+
+```{r}
+
+Original_File <- UniversalBank
+
+```
+
+REQUIREMENT 1:
+
+Transform categorical predictors with more than two categories into dummy variables FIRST.
+Need to do this for Education
+
+```{r}
+
+library(caret)
+library(class)
+
+UniversalBank$ID <- NULL
+UniversalBank$ZIP.Code <- NULL
+
+UniversalBank$Education=as.factor(UniversalBank$Education)
+UniversalBank$Personal.Loan=as.factor(UniversalBank$Personal.Loan)
+
+dummies <- dummyVars(Personal.Loan ~ ., data = UniversalBank)
+UniversalBank_dummy <- as.data.frame(predict(dummies, newdata = UniversalBank))
+
+```
+
+Normalize the data (I'm using z-score scaling as input method)
+
+```{r}
+
+Norm_model <- preProcess(UniversalBank_dummy, method = c("center", "scale"))
+UniversalBank_norm <- predict(Norm_model, UniversalBank_dummy)
+summary(UniversalBank_norm)
+
+```
+Add back in the target variable (Personal.Loan)
+
+```{r}
+
+UniversalBank_norm$Personal.Loan <- UniversalBank$Personal.Loan
+
+```
+
+We need to divide the data into training (60%) and validation (40%) sets
+
+```{r}
+
+Train_Index <- createDataPartition(UniversalBank$Personal.Loan, p=0.6, list = FALSE)
+Train.df <- UniversalBank_norm[Train_Index,]
+Validation.df <- UniversalBank_norm[-Train_Index,]
+
+```
+
+Create data frame with values to predict
+Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1, and Credit Card = 1.
+
+```{r}
+
+To_Predict <- data.frame (Age=40, Experience=10, Income=84, Family=2, CCAvg=2, Education.1=0, Education.2=1, Education.3=0, Mortgage=0, Securities.Account=0, CD.Account=0, Online=1, CreditCard=1)
+
+print(To_Predict)
+
+```
+
+Normalize this new record (To_Predict) using the same model we applied to the original dataset
+
+```{r}
+
+To_Predict_norm <- predict(Norm_model, To_Predict)
+print(To_Predict_norm)
+
+```
+
+Use k-NN function to make the prediction.
+
+Perform a k-NN classification with all predictors EXCEPT ID and Zip_Code using k=1.
+Specify success class as 1 (loan acceptance) and use the default cutoff value of 0.5.
+
+```{r}
+
+Prediction <- knn(train = Train.df[,1:13],
+                  test = To_Predict_norm[,1:13],
+                  cl=Train.df$Personal.Loan,
+                  k=1)
+print(Prediction)
+
+```
+ANSWER - REQUIREMENT 1:
+
+As shown in the above results (with k=1), the prediction for this observation is that Personal.Loan = 0 meaning, this individual is predicted to NOT accept the personal loan being offered.
+
+
+REQUIREMENT 2:
+
+What is a choice of k that balances between overfitting and ignoring the predictor information?
+
+```{r}
+
+set.seed(123)
+
+fitControl <- trainControl(method = "repeatedcv", number = 3, repeats = 2)
+
+searchGrid <- expand.grid(k = 1:15)
+
+Knn.model <- train(Personal.Loan ~ .,
+                   data = Train.df,
+                   method = 'knn',
+                   tuneGrid = searchGrid,
+                   trControl = fitControl,)
+
+Knn.model
+
+```
+ANSWER - REQUIREMENT 2:
+
+The above Knn.model indicates that the k value with the highest accuracy is a value of k=3
+
+
+REQUIREMENT 3:
+
+Show the confusion matrix for the validation data that results from using the best k.
+
+Use the predict function of the caret package to make predictions on the validation set.
+
+```{r}
+
+predictions <- predict(Knn.model, Validation.df)
+
+```
+
+Compare predictions from the Knn.model to the actual Personal.Loan labels in the validation set to compute the confusion matrix
+
+```{r}
+
+confusionMatrix(predictions, Validation.df$Personal.Loan)
+
+```
+
+REQUIREMENT 4:
+
+Consider the following customer: Age = 40, Experience = 10, Income = 84, Family = 2, CCAvg = 2, Education_1 = 0, Education_2 = 1, Education_3 = 0, Mortgage = 0, Securities Account = 0, CD Account = 0, Online = 1 and Credit Card = 1. Classify the customer using the best k.
+
+```{r}
+
+# The independent variables specified in this requirement (4) is the same as those specified in requirement 1. Therefore, this data.frame is already build and normalized (To_Predict_norm).
+
+print(To_Predict)
+
+```
+
+Using the normalized prediction file (To_Predict_norm), we will use the Knn.model to predict using the best k value (k=3)
+
+```{r}
+
+predict(Knn.model, To_Predict_norm)
+
+```
+ANSWER - REQUIREMENT 4:
+
+Using the best k value, the above results (with k=3) is predicting this observation will have Personal.Loan = 0 meaning, this individual is predicted to NOT accept the personal loan being offered.
+
+
