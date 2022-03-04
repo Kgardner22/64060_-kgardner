@@ -160,7 +160,7 @@ P(Personal.Loan=1 | CreditCard=1, Online=1)
   Using the quantities from the tables generated in requirement C, 
   we can compute the Naive Bayes Calculations as follows:
   
-  P = (((85/285)(174/285)(285/3000)) / (((85/285)(174/285)(285/3000))+((784/2715)(1621/2715)(2715/3000)))
+  P = ((85/285)(174/285)(285/3000)) / (((85/285)(174/285)(285/3000))+((784/2715)(1621/2715)(2715/3000)))
   P = (((0.2982456)(0.6105263)(0.095)) / (((0.2982456)(0.6105263)(0.095)) / ((0.2887661)(0.5970534)(0.905)))
   P = 0.0172982 / 0.1733281
   P = 0.0998003
@@ -182,12 +182,18 @@ In requirement E, we calculated this as:
 
 Which is a more accurate estimate?
 
-  ANSWER = In reading our textbook, pages 193-194, my understanding is that the answer of 0.0949 calculated in  requirement B is more accurate since this is referred to as the Complete (Exact) Bayes Calculation. The Naive Bayes Calculation of 0.0998 from requirement E is an extremely close estimate of the Exact Bayes Calculation. Our Naive Bayes Calculation from requirement E is extremely close to the result of the naiveBayes() calculation in requirement G which was 0.1013226.
+  ANSWER = The answer of 0.0949 calculated in requirement B is more accurate. This is the Complete (Exact) Bayes Calculation. It does not make any assumptions as does the Naive Bayes Calculation in requirement E. Naive Bayes assumes conditional independence (E) while Bayes theorum (B) does not. This being said, Naive Bayes can provide a close estimate and typically, this has very little if any impact on the rank order of the output. 
 
 
 REQUIREMENT G:
 Which of the entries in this table are needed for computing P(Personal.Loan=1 | CreditCard=1, Online=1)?
-Run naiveBayes on the data. Examine the model output on training data and find the entry that corresponds to P(Personal.Loan=1 | CreditCard=1, Online=1). Compare this to the number you obtained in requirement E.
+Run naiveBayes on the data. 
+  
+  ANSWER: The entries in the table needed to compute this are the results where CreditCard=1 and Online=1 showing the results of 477 observations for Personal.Loan=0 and 50 observations for Personal.Loan=1. We do not need the other data in the table. We then compute this by taking 50/(477+50) = 0.0949.
+
+
+
+Examine the model output on training data and find the entry that corresponds to P(Personal.Loan=1 | CreditCard=1, Online=1). Compare this to the number you obtained in requirement E.
 
 ```{r}
 
@@ -199,6 +205,8 @@ predict(nb.model, To_Predict, type='raw') #type set to raw to get probabilities;
 These results show, given CreditCard=1 and Online=1, the probability of the personal loan being accepted (Personal.Loan=1) is 0.1013226.
 
 The number we calculated in requirement E was 0.0998003
+
+There is a slight difference in these numbers based on how the model handles the cutoff probability.
 
 
 
