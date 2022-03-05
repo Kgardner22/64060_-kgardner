@@ -12,7 +12,7 @@ output: word_document
 
 IMPORT AND PREPARE DATA:
   
-Import the UniversalBank.csv file  
+Import the UniversalBank.csv file
 
 ```{r}
 
@@ -30,6 +30,7 @@ Original_File <- UniversalBank
 ```
 
 Load required libraries
+
 ```{r}
 
 library(caret)
@@ -38,6 +39,15 @@ library(e1071) #used for naiveBayes();
 
 ```
 
+Prepare the data by converting predictor and target variable to factors
+
+```{r}
+
+UniversalBank$CreditCard=as.factor(UniversalBank$CreditCard)
+UniversalBank$Online=as.factor(UniversalBank$Online)
+UniversalBank$Personal.Loan=as.factor(UniversalBank$Personal.Loan)
+
+```
 
 
 We need to divide the data into training (60%) and validation (40%) sets
@@ -96,14 +106,14 @@ ftable(Table1)
 ```
 P(Personal.Loan=1 | CreditCard=1, Online=1)
 
-P(50|477+50) = 0.0949 = 9.49%
+  ((59/(479+59)) = (59/538) = 0.1096654
 
-ANSWER: 0.0949
+ANSWER: 0.1096654
 
 
 REQUIREMENT C:
 
-Create two separate pivot tables for the training data. One will have Personal.Loan (rows) as a function of Online (columns) and the other will have Personal.Loan (rows) as a function of CreditCard.
+Create two separate pivot tables for the training data. One will have CreditCard (rows) as a function of Personal.Loan (columns) and the other will have Online (rows) as a function of Personal.Loan (columns).
 
 ```{r}
 
@@ -123,34 +133,34 @@ REQUIREMENT D:
 Compute the following quantities [P(A|B) means "the probability of A given B"]
 
 i. P(CreditCard=1 | Personal.Loan=1)
-    (85/(200+85)) = (85/285) = 0.2982  #Note: I'm using the CreditCard table above
+    (93/(195+93)) = (93/288) = 0.3229  #Note: I'm using the CreditCard table above
     
-    ANSWER = 0.2982
+    ANSWER = 0.3229
 
 ii. P(Online=1 | Personal.Loan=1)
-    (174/(111+174)) = (174/285) = 0.6105  #Note: I'm using the Online table above
+    (179/(109+179)) = (179/288) = 0.6215  #Note: I'm using the Online table above
 
-    ANSWER = 0.6105
+    ANSWER = 0.6215
     
 iii. P(Personal.Loan=1)
-    ((200+85)/(1931+784+200+85)) = (285/3000) = 0.095  #Note: I'm using the CreditCard table above
+    ((195+93)/(1924+788+195+93)) = (288/3000) = 0.096  #Note: I'm using the CreditCard table above
 
-    ANSWER = 0.095
+    ANSWER = 0.096
 
 iv. P(CreditCard=1 | Personal.Loan=0)
-    (784/(1931+784)) = (784/2715) = 0.2888  #Note: I'm using the CreditCard table above
+    (788/(1924+788)) = (788/2712) = 0.2906  #Note: I'm using the CreditCard table above
 
-    ANSWER = 0.2888
+    ANSWER = 0.2906
 
 v. P(Online=1 | Personal.Loan=0)
-    (1621/(1094+1621)) = (1621/2715) = 0.5971  #Note: I'm using the Online table above
+    (1631/(1081+1631)) = (1631/2712) = 0.6014  #Note: I'm using the Online table above
     
-    ANSWER = 0.5971
+    ANSWER = 0.6014
     
 vi. P(Personal.Loan=0)
-    ((1931+784)/(1931+784+200+85)) = (2715/3000) = 0.905  #Note: I'm using the CreditCard table above
+    ((1924+788)/(1924+788+195+93)) = (2712/3000) = 0.904  #Note: I'm using the CreditCard table above
     
-    ANSWER = 0.905
+    ANSWER = 0.904
 
 
 REQUIREMENT E:
@@ -160,12 +170,13 @@ P(Personal.Loan=1 | CreditCard=1, Online=1)
   Using the quantities from the tables generated in requirement C, 
   we can compute the Naive Bayes Calculations as follows:
   
-  P = ((85/285)(174/285)(285/3000)) / (((85/285)(174/285)(285/3000))+((784/2715)(1621/2715)(2715/3000)))
-  P = (((0.2982456)(0.6105263)(0.095)) / (((0.2982456)(0.6105263)(0.095)) / ((0.2887661)(0.5970534)(0.905)))
-  P = 0.0172982 / 0.1733281
-  P = 0.0998003
+  P = ((93/288)(179/288)(288/3000)) / (((93/288)(179/288)(288/3000))+((788/2712)(1631/2712)(2712/3000)))
+  P = (((0.3229167)(0.6215278)(0.096)) / (((0.3229167)(0.6215278)(0.096)) / ((0.2905605)(0.6014012)(0.904)))
+  P = 0.0192674 / (0.0192674 + 0.1579681)
+  P = 0.0192674 / 0.1772355
+  P = 0.1087107
   
-  ANSWER = 0.0998
+  ANSWER = 0.1087107
 
 
 REQUIREMENT F:
@@ -173,40 +184,40 @@ Compare the value calculated in requirement E with the one obtained from the piv
 
 In requirement B, we calculated this as:
   P(Personal.Loan=1 | CreditCard=1, Online=1)
-    (50|477+50) = 0.0949
+    ((59/(479+59)) = (59/538) = 0.1096654
     This is the Complete (Exact) Bayes Calculation
 
 In requirement E, we calculated this as:
-  P = (0.0172982 / 0.1733281) = 0.0998
+  P = (0.0192674 / 0.1772355) = 0.1087107
     This is the Naive Bayes Calculation as described on page 194 of our textbook.
 
 Which is a more accurate estimate?
 
-  ANSWER = The answer of 0.0949 calculated in requirement B is more accurate. This is the Complete (Exact) Bayes Calculation. It does not make any assumptions as does the Naive Bayes Calculation in requirement E. Naive Bayes assumes conditional independence (E) while Bayes theorum (B) does not. This being said, Naive Bayes can provide a close estimate and typically, this has very little if any impact on the rank order of the output. 
+  ANSWER = The answer of 0.1096654 calculated in requirement B is more accurate. This is the Complete (Exact) Bayes Calculation that we calculated from the pivot tables. It does not make any assumptions as does the Naive Bayes Calculation in requirement E. Naive Bayes (E) assumes conditional independence while Bayes theorum (B) does not. This being said, Naive Bayes can provide a close estimate and typically, this has very little if any impact on the rank order of the output. 
 
 
 REQUIREMENT G:
 Which of the entries in this table are needed for computing P(Personal.Loan=1 | CreditCard=1, Online=1)?
-Run naiveBayes on the data. 
-  
-  ANSWER: The entries in the table needed to compute this are the results where CreditCard=1 and Online=1 showing the results of 477 observations for Personal.Loan=0 and 50 observations for Personal.Loan=1. We do not need the other data in the table. We then compute this by taking 50/(477+50) = 0.0949.
+
+  ANSWER: The entries in the table needed to compute this are the results where CreditCard=1 and Online=1 showing the results of 479 observations for Personal.Loan=0 and 59 observations for Personal.Loan=1. We do not need the other data in the table. We then compute this by taking 59/(479+59) = 0.1096654.
 
 
-
-Examine the model output on training data and find the entry that corresponds to P(Personal.Loan=1 | CreditCard=1, Online=1). Compare this to the number you obtained in requirement E.
+Run naiveBayes on the data. Examine the model output on training data and find the entry that corresponds to P(Personal.Loan=1 | CreditCard=1, Online=1). Compare this to the number you obtained in requirement E.
 
 ```{r}
 
 nb.model<-naiveBayes(Personal.Loan~CreditCard+Online, data=Train.df)
-To_Predict=data.frame(CreditCard=1, Online=1)
+To_Predict=data.frame(CreditCard="1", Online="1")
 predict(nb.model, To_Predict, type='raw') #type set to raw to get probabilities;
 
 ```
-These results show, given CreditCard=1 and Online=1, the probability of the personal loan being accepted (Personal.Loan=1) is 0.1013226.
+These results show, given CreditCard=1 and Online=1, the probability of the personal loan being accepted (Personal.Loan=1) is 0.1087106.
 
-The number we calculated in requirement E was 0.0998003
+The number we calculated in requirement E was 0.1087107
 
-There is a slight difference in these numbers based on how the model handles the cutoff probability.
+There is a slight difference in these numbers due to rounding. 
+
+The niaveBayes model in requirement G computed the same value we manually calculated in requirement E. This Naive Bayes calculation assumes conditional independence while Bayes theorum, calculated in requirement B, does not. Therefore, the Bayes calculation in requirement B (0.1096654) is more accurate. This being said, Naive Bayes can provide a close estimate and typically, this has very little if any impact on the rank order of the output. 
 
 
 
