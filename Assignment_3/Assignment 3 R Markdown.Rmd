@@ -47,6 +47,8 @@ UniversalBank$CreditCard=as.factor(UniversalBank$CreditCard)
 UniversalBank$Online=as.factor(UniversalBank$Online)
 UniversalBank$Personal.Loan=as.factor(UniversalBank$Personal.Loan)
 
+summary(UniversalBank)
+
 ```
 
 
