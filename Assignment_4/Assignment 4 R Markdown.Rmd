@@ -143,7 +143,7 @@ set.seed(64060)
 clusters_index4 <- predict(k4M)
 dist(k4M@centers)
 image(k4M)
-points(df, col=clusters_index, pch=19, cex=0.3)
+points(df, col=clusters_index4, pch=19, cex=0.3)
 
 ```
 
@@ -209,7 +209,7 @@ set.seed(64060)
 clusters_index3 <- predict(k3M)
 dist(k3M@centers)
 image(k3M)
-points(df, col=clusters_index, pch=19, cex=0.3)
+points(df, col=clusters_index3, pch=19, cex=0.3)
 
 ```
 
@@ -278,7 +278,7 @@ set.seed(64060)
 clusters_index5 <- predict(k5E)
 dist(k5E@centers)
 image(k5E)
-points(df, col=clusters_index, pch=19, cex=0.3)
+points(df, col=clusters_index5, pch=19, cex=0.3)
 
 ```
 
