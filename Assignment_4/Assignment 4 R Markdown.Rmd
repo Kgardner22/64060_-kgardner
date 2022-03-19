@@ -1,0 +1,561 @@
+---
+title: "Assignment_4"
+author: "Kevin Gardner"
+date: "Due 3/20/2022"
+output: word_document
+---
+
+# ------------------------------------------------
+# Following is the link to my GitHub account:
+# https://github.com/Kgardner22/64060_-kgardner
+# ------------------------------------------------
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+dir.create("images")
+```
+
+IMPORT AND PREPARE DATA:
+  
+Import the Pharmaceuticals.csv file
+
+```{r}
+
+Pharmaceuticals <- read.table('C:/R/MyData/Pharmaceuticals.csv', header = T, sep = ',') 
+
+summary(Pharmaceuticals)
+
+```
+
+Load required libraries
+
+```{r}
+
+library(tidyverse)  #for data manipulation
+library(factoextra)  #for clustering and visualization
+library(flexclust)
+
+```
+
+Use cluster analysis to explore and analyze the given dataset as follows:
+
+REQUIREMENT A:
+
+Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s) used, the number of clusters formed, and so on.
+
+First, we create the data.frame with only the numerical variables 1 to 9
+
+```{r}
+
+set.seed(64060)
+
+df <- Pharmaceuticals[,c(3:11)]
+
+summary(df)
+
+```
+
+Before we can begin cluster analysis, we must first scale the data.
+
+```{r}
+
+# Scaling the data frame (z-score) 
+df <- scale(df)
+
+summary(df)
+
+```
+
+We'll compute and visualize the distance matrix between rows using get_dist() and fviz_dist()
+
+```{r}
+
+distance <- get_dist(df)
+fviz_dist(distance)
+
+```
+The above graph shows the distance between firms.
+
+I'll run the k-means algorithm to cluster the firms, choosing an initial random value of k = 4.
+
+```{r}
+set.seed(64060)
+k4 <- kmeans(df, centers = 4, nstart = 25) # k = 4, number of restarts = 25
+
+# the following will help us Visualize the output
+
+k4$centers # output the centers
+k4$size # Number of firms in each cluster
+fviz_cluster(k4, data = df) # Visualize the output
+```
+This produces similar size clusters (8,4,6,3)
+
+
+# Other Distances
+
+I'll rerun the example using other distance measures to compare the results
+
+```{r}
+
+set.seed(64060)
+
+k4M = kcca(df, k=4, kccaFamily("kmedians"))  #kmedians uses Manhattan distance
+k4M
+
+k4E = kcca(df, k=4, kccaFamily("kmeans"))  #kmeans uses Euclidean distance
+k4E
+
+k4A = kcca(df, k=4, kccaFamily("angle"))  #angle uses angle between observation and centroid
+k4A
+
+# We won't use Jaccard distance as this is primarily used for categorical data which is not applicable.
+
+```
+In reviewing these results, we see the cluster sizes using kmedians (Manhattan), kmeans (Euclidean) and angle produce similar results.
+
+
+Let's take a look at the images of each of these results:
+```{r}
+image(k4M) # Manhattan distance
+image(k4E) # Euclidean distance
+image(k4A) # angle
+
+```
+These images clearly show the various distance measures make a huge difference in the clustering results. It's clear that k4M, which is using Manhattan distance (kmedians), produces better results since the distance between the centroids is maximized in comparison to the other results.
+
+
+This is also confirmed by looking at the centers:
+```{r}
+dist(k4M@centers)
+dist(k4E@centers)
+dist(k4A@centers)
+
+```
+As shown in this data, the distance measure producing the maximum distance between centroids is Manhattan distance (k4M)
+
+
+
+I'll now apply the predict function to k4M which uses Manhattan Distance
+
+```{r}
+
+set.seed(64060)
+clusters_index4 <- predict(k4M)
+dist(k4M@centers)
+image(k4M)
+points(df, col=clusters_index, pch=19, cex=0.3)
+
+```
+
+But is a K of 4 really the best choice? After all, this was just a random choice.
+Let's use a K of 3 and examine the results.
+
+
+```{r}
+set.seed(64060)
+k3 <- kmeans(df, centers = 3, nstart = 25) # k = 3, number of restarts = 25
+
+# the following will help us Visualize the output
+
+k3$centers # output the centers
+k3$size # Number of firms in each cluster
+fviz_cluster(k3, data = df) # Visualize the output
+
+```
+# Other Distances
+
+I'll rerun the example using other distance measures to compare the results
+
+```{r}
+
+set.seed(64060)
+
+k3M = kcca(df, k=3, kccaFamily("kmedians"))  #kmedians uses Manhattan distance
+k3M
+
+k3E = kcca(df, k=3, kccaFamily("kmeans"))  #kmeans uses Euclidean distance
+k3E
+
+k3A = kcca(df, k=3, kccaFamily("angle"))  #angle uses angle between observation and centroid
+k3A
+
+# We won't use Jaccard distance as this is primarily used for categorical data which is not applicable.
+
+```
+Let's take a look at the images of each of these results:
+
+```{r}
+image(k3M) # Manhattan distance
+image(k3E) # Euclidean distance
+image(k3A) # angle
+
+```
+Once again, using Manhattan distance produces better results with the clustering. There is a greater distance between centroids of the clusters than using Euclidean or Angle.
+
+This is also confirmed by looking at the centers:
+
+```{r}
+dist(k3M@centers)
+dist(k3E@centers)
+dist(k3A@centers)
+
+```
+
+Let's apply the predict function to k3M which uses Manhattan Distance
+
+```{r}
+
+set.seed(64060)
+clusters_index3 <- predict(k3M)
+dist(k3M@centers)
+image(k3M)
+points(df, col=clusters_index, pch=19, cex=0.3)
+
+```
+
+Before we make any conclusions with these results, let's try a K of 5 and analyze the results:
+
+
+```{r}
+set.seed(64060)
+k5 <- kmeans(df, centers = 5, nstart = 25) # k = 5, number of restarts = 25
+
+# the following will help us Visualize the output
+
+k5$centers # output the centers
+k5$size # Number of firms in each cluster
+fviz_cluster(k5, data = df) # Visualize the output
+
+```
+
+# Other Distances
+
+I'll rerun the example using other distance measures to compare the results
+
+```{r}
+
+set.seed(64060)
+
+k5M = kcca(df, k=5, kccaFamily("kmedians"))  #kmedians uses Manhattan distance
+k5M
+
+k5E = kcca(df, k=5, kccaFamily("kmeans"))  #kmeans uses Euclidean distance
+k5E
+
+k5A = kcca(df, k=5, kccaFamily("angle"))  #angle uses angle between observation and centroid
+k5A
+
+# We won't use Jaccard distance as this is primarily used for categorical data which is not applicable.
+
+```
+
+Let's take a look at the images of each of these results:
+
+```{r}
+image(k5M) # Manhattan distance
+image(k5E) # Euclidean distance
+image(k5A) # angle
+
+```
+This is a little more interesting. It seems with the K of 5, the Euclidean distance may be producing a better result
+
+Let's take a closer look at the centers:
+
+```{r}
+dist(k5M@centers)
+dist(k5E@centers)
+dist(k5A@centers)
+
+```
+It appears that the Euclidean distance (k5E) is producing better results as can be seen in both the image and the data for the centers. This seems to maximize the distance between the cluster centroids.
+
+
+Let's apply the predict function to k5E which uses Euclidean Distance
+
+```{r}
+
+set.seed(64060)
+clusters_index5 <- predict(k5E)
+dist(k5E@centers)
+image(k5E)
+points(df, col=clusters_index, pch=19, cex=0.3)
+
+```
+
+CHOOSING THE BEST K
+Let's use some tools to help us determine the best K value
+
+We'll first review an "elbow chart" to determine k
+
+```{r}
+
+fviz_nbclust(df, kmeans, method = "wss")
+
+```
+In reviewing the "elbow chart" (WSS), it is a little unclear as to what the optimal number of clusters (k) should be since there is not a clearly visible "elbow" in the results plot. The total WSS has a substantial drop from 1 to 2, less of a drop from 2 to 3, and then another larger drop from 3 to 4. From 4 to 5 and 5 to 6, the decrease is similar and then from 6 to 7, there is little drop. My first thought is the elbow is either at 4 or 6. Honestly, it is difficult to make a reliable determination of the optimal number of clusters (k) using this method (WSS) for this particular set of data. Therefore, I need to confirm this using a different method (Silhouette Method).
+
+
+Next, we'll use the Silhouette Method to determine the number of clusters (k)
+
+```{r}
+fviz_nbclust(df, kmeans, method = "silhouette")
+```
+In using the Silhouette Method, it is clear that the optimal number of clusters (k) is 5.
+
+SUMMARY OF REQUIREMENT A:
+
+When clustering, our objective is to minimize the similarity within the cluster and maximize the dissimilarity between the clusters. Meaning, we want the clusters to be as tight as possible with the distance between the clusters to be as great as possible. Also, it is preferable to have the size of the clusters similar.
+
+```{r}
+k3$size
+k4$size
+k5$size
+
+```
+We have 21 observations. For 3 clusters, the average size would be 7. For 4 clusters, the average size would be 5.25. For 5 clusters, the average size would be 4.2. In reviewing the results of our cluster sizes, the results of our 5 clusters seem to remain closer to the average.
+
+```{r}
+
+image(k3M)
+image(k4M)
+image(k5E)
+
+```
+In reviewing these images, the image with the k of 5 seems to be producing more desirable results. The clusters are "tighter" (more tightly grouped) with the distance between clusters maximized.
+
+
+```{r}
+dist(k3M@centers)
+dist(k4M@centers)
+dist(k5E@centers)
+
+```
+The above statement is also confirmed by reviewing the centers
+
+Using the silhouette method in determining k, it confirmed the optimal k value is 5.
+
+
+WEIGHTING THE VARIABLES
+In reviewing the data, it's logical to think Market_Cap and PE_Ratio would be more substantial in differentiating the various firms. Going with this assumption, let's place more weight on these variables than on the others.
+
+Let's create the data frame we'll use for the weighted results
+
+```{r}
+set.seed(64060)
+
+df_weighted <- Pharmaceuticals[,c(3:11)]
+
+summary(df_weighted)
+
+```
+
+We need to scale this data frame before we can proceed.
+
+```{r}
+
+# Scaling the data frame (z-score) 
+df_weighted <- scale(df_weighted)
+
+summary(df_weighted)
+
+```
+CHOOSING THE BEST K
+Let's review an "elbow chart" to determine k
+
+```{r}
+
+fviz_nbclust(df_weighted, kmeans, method = "wss")
+
+```
+Again, these results are a little unclear, so let's defer to the Silhouette method.
+
+
+Now, let's use the Silhouette Method to determine the number of clusters (k)
+```{r}
+fviz_nbclust(df_weighted, kmeans, method = "silhouette")
+```
+
+This shows the optimal number of clusters is 5
+
+
+Now, we'll place more weight on Market_Cap (1st variable) and PE_Ratio (3rd variable)
+
+```{r}
+
+set.seed(64060)
+
+k5_weighted <- cclust(df_weighted, k=5, save.data=TRUE, weights = c(1,0.5,1,0.5,0.5,0.5,0.5,0.5,0.5), method = "hardcl")
+
+k5_weighted
+
+```
+Let's now visualize our results:
+
+```{r}
+
+image(k5_weighted)
+dist(k5_weighted@centers)
+
+```
+CONCLUSIONS:
+My hypothesis regarding the weight placed on each variable may be incorrect. When reviewing the images of the original k5E and the weighted k5_weighted, k5E produces better cluster results. To get better results with the weighted variables, we would need better estimations of the actual weighted importance of each variable.
+
+
+
+REQUIREMENT B:
+
+Interpret the clusters with respect to the numerical variables used in forming the clusters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+REQUIREMENT C:
+
+Is there a pattern in the clusters with respect to the non-numerical variables (10 to 12)?
+
+First, we'll add a column to Pharmaceuticals called "Cluster_No" and set the values equal to the cluster for each observation
+
+```{r}
+
+Pharmaceuticals$Cluster_No = k5E@cluster
+
+```
+
+
+We'll first compare the Cluster_No to the Median_Recommendation (variable 10)
+
+```{r}
+
+table(Cluster=Pharmaceuticals$Cluster_No, Median_Recommendation=Pharmaceuticals$Median_Recommendation)
+
+```
+In reviewing the distribution of observations of the Median_Recommendation compared to each Cluster, we'll disregard clusters 2 and 4 since these have only 1 observation. 
+
+     Cluster 1, 40% are Hold, 40% are Moderate Buy, and 20% are Moderate Sell.
+     Cluster 3, 44% are Hold, 33% are Moderate Buy, and 11% are Moderate Sell.
+     Cluster 5, 40% are Hold, 20% are Moderate Buy, and 40% are Moderate Sell.
+
+Therefore, there does NOT seem to be any strong correlation between this variable (variable 10) and the clusters to which they were assigned.
+
+
+
+Next, we'll compare the Cluster_No to the Location (variable 11)
+
+```{r}
+
+table(Cluster=Pharmaceuticals$Cluster_No, Location=Pharmaceuticals$Location)
+
+```
+In reviewing the distribution of observations of the Location compared to each Cluster, again, we'll disregard Clusters 2 and 4 since these have only 1 observation. 
+
+    Cluster 1, 20% are Germany, 20% are Ireland, and 60% are US.
+    Cluster 3, 11% are Canada, 11% are France, 11% are Switzerland, 11% are UK, and 55% are US
+    Cluster 5, 20% are UK and 80% are US
+    
+From the raw data, we know that 62% of the firms in the observations are from the US.
+
+While a larger percentage of firms in each Cluster are from the US, the percentage of US firms in each cluster is not much different than the overall average number of firms in the US. Therefore, there does not seem to be a strong correlation between Cluster and Location.
+
+
+
+Now, we'll compare the Cluster_No to the Exchange (variable 12)
+
+```{r}
+
+table(Cluster=Pharmaceuticals$Cluster_No, Exchange=Pharmaceuticals$Exchange)
+
+```
+In reviewing the distribution of observations of the Exchange compared to each Cluster, again, we'll disregard Clusters 2 and 4 since these have only 1 observation. 
+
+    Cluster 1, 20% are AMEX, 20% are NASDAQ, and 60% are NYSE
+    Cluster 3, 100% are NYSE
+    Cluster 5, 100% are NYSE
+
+However, we know from the raw data that of the 21 firms listed, only 1 are on the AMEX and only 1 are on the NASDAQ. All remaining 19 firms are on the NYSE.
+
+Since the one firm on the AMEX and the one firm on the NASDAQ are both listed in the same cluster (Cluster 1) together with 3 firms on the NYSE, it seems there is no correlation between Cluster and Exchange.
+
+
+REQUIREMENT D:
+
+Provide an appropriate name for each cluster using any or all of the variables in the dataset.
+
+For this, I'll use 2 key variables for simplification: Market_Cap and PE_Ratio
+
+```{r}
+
+set.seed(64060)
+
+d_df <- Pharmaceuticals[,c(3,5)]
+
+summary(d_df)
+
+```
+We'll scale the data frame
+
+```{r}
+
+# Scaling the data frame (z-score) 
+d_df <- scale(d_df)
+
+summary(d_df)
+
+```
+CHOOSING THE BEST K
+Let's review an "elbow chart" to determine k
+
+```{r}
+
+fviz_nbclust(d_df, kmeans, method = "wss")
+
+```
+This chart clearly shows the knee point at 3, indicating the optimal number of clusters is 3
+
+
+Now, let's use the Silhouette Method to determine the number of clusters (k)
+
+```{r}
+
+fviz_nbclust(d_df, kmeans, method = "silhouette")
+
+```
+This is also showing the optimal number of clusters is 3.
+
+
+I'll run the k-means algorithm to cluster the firms and then visualize the output
+
+```{r}
+set.seed(64060)
+
+d_k3 <- kmeans(d_df, centers = 3, nstart = 25) # k = 3, number of restarts = 25
+
+fviz_cluster(d_k3, data = d_df) # Visualize the output
+```
+Here, we see there are three (3) clusters:
+  
+  Cluster 1: Has low PE_Ratio (indicating low growth) and small Market_Cap (greater growth potential)
+  Cluster 2: Has high PE_Ratio (indicating high growth) and small Market_Cap (greater growth potential)
+  Cluster 3: Has low PE_Ratio (indicating low growth) and large Market_Cap (lower growth potential)
+
+In general, Market_Cap corresponds to the firm's stage in its business development. Large cap stocks are considered more conservative, less risky and less growth potential.
+
+Also, high PE Ratios suggest investors are willing to pay more because they expecting higher earnings growth in the future. But it could also be an indication that the stock is overvalued. A low PE Ratio is better for investors as it could be an indication that the stock is currently undervalued.
+
+Therefore, I would name each cluster as follows:
+  
+  Cluster 1: Growth Potential Investments
+  Cluster 2: Riskier Investments
+  Cluster 3: Conservative Investments
+    
+  
+
