@@ -39,7 +39,7 @@ library(flexclust)
 
 Use cluster analysis to explore and analyze the given dataset as follows:
 
-REQUIREMENT A:
+REQUIREMENTS A and B:
 
 Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s) used, the number of clusters formed, and so on.
 
@@ -292,7 +292,7 @@ We'll first review an "elbow chart" to determine k
 fviz_nbclust(df, kmeans, method = "wss")
 
 ```
-In reviewing the "elbow chart" (WSS), it is a little unclear as to what the optimal number of clusters (k) should be since there is not a clearly visible "elbow" in the results plot. The total WSS has a substantial drop from 1 to 2, less of a drop from 2 to 3, and then another larger drop from 3 to 4. From 4 to 5 and 5 to 6, the decrease is similar and then from 6 to 7, there is little drop. My first thought is the elbow is either at 4 or 6. Honestly, it is difficult to make a reliable determination of the optimal number of clusters (k) using this method (WSS) for this particular set of data. Therefore, I need to confirm this using a different method (Silhouette Method).
+In reviewing the "elbow chart" (WSS), it is a little unclear as to what the optimal number of clusters (k) should be since there is not a clearly visible "knee point" in the results plot. The total WSS has a substantial drop from 1 to 2, less of a drop from 2 to 3, and then another larger drop from 3 to 4. From 4 to 5 and 5 to 6, the decrease is similar and then from 6 to 7, there is little drop. My first thought is the knee point is either at 4 or 6. Honestly, it is difficult to make a reliable determination of the optimal number of clusters (k) using this method (WSS) for this particular set of data. Therefore, I need to confirm this using a different method (Silhouette Method).
 
 
 Next, we'll use the Silhouette Method to determine the number of clusters (k)
@@ -398,24 +398,7 @@ dist(k5_weighted@centers)
 
 ```
 CONCLUSIONS:
-My hypothesis regarding the weight placed on each variable may be incorrect. When reviewing the images of the original k5E and the weighted k5_weighted, k5E produces better cluster results. To get better results with the weighted variables, we would need better estimations of the actual weighted importance of each variable.
-
-
-
-REQUIREMENT B:
-
-Interpret the clusters with respect to the numerical variables used in forming the clusters.
-
-
-
-
-
-
-
-
-
-
-
+My hypothesis regarding the weight placed on each variable may be incorrect. When reviewing the images of the original k5E and the weighted k5_weighted, k5E produces better cluster results which doesn't seem entirely logical. To get better results with the weighted variables, we would need better estimations of the actual weighted importance of each variable.
 
 
 
@@ -423,7 +406,7 @@ REQUIREMENT C:
 
 Is there a pattern in the clusters with respect to the non-numerical variables (10 to 12)?
 
-First, we'll add a column to Pharmaceuticals called "Cluster_No" and set the values equal to the cluster for each observation
+First, we'll add a column to Pharmaceuticals called "Cluster_No" and set the values equal to the cluster which each observation has been assigned to.
 
 ```{r}
 
@@ -543,13 +526,13 @@ fviz_cluster(d_k3, data = d_df) # Visualize the output
 ```
 Here, we see there are three (3) clusters:
   
-  Cluster 1: Has low PE_Ratio (indicating low growth) and small Market_Cap (greater growth potential)
-  Cluster 2: Has high PE_Ratio (indicating high growth) and small Market_Cap (greater growth potential)
-  Cluster 3: Has low PE_Ratio (indicating low growth) and large Market_Cap (lower growth potential)
+  Cluster 1: Has low PE_Ratio and small Market_Cap
+  Cluster 2: Has high PE_Ratio and small Market_Cap
+  Cluster 3: Has low PE_Ratio and large Market_Cap
 
 In general, Market_Cap corresponds to the firm's stage in its business development. Large cap stocks are considered more conservative, less risky and less growth potential.
 
-Also, high PE Ratios suggest investors are willing to pay more because they expecting higher earnings growth in the future. But it could also be an indication that the stock is overvalued. A low PE Ratio is better for investors as it could be an indication that the stock is currently undervalued.
+Also, high PE Ratios suggest investors are willing to pay more because they are expecting higher earnings growth in the future. But it could also be an indication that the stock is overvalued. A low PE Ratio is better for investors as it could be an indication that the stock is currently undervalued.
 
 Therefore, I would name each cluster as follows:
   
