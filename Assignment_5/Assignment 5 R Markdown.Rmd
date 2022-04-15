@@ -1,0 +1,192 @@
+---
+title: "Assignment_5"
+author: "Kevin Gardner"
+date: "Due 4/17/2022"
+output: word_document
+---
+
+# ------------------------------------------------
+# Following is the link to my GitHub account:
+# https://github.com/Kgardner22/64060_-kgardner
+# ------------------------------------------------
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+dir.create("images")
+```
+
+IMPORT THE DATA:
+
+```{r}
+
+cereals.df <- read.csv('C:/R/MyData/Cereals.csv', header = T, sep = ',') 
+
+summary(cereals.df)
+
+```
+
+REMOVE ALL CEREALS WITH MISSING VALUES:
+
+```{r}
+cereals.df <- na.omit(cereals.df) #Remove NA (missing) values
+
+```
+
+
+SET ROW NAMES IN THE DATAFRAME:
+
+```{r}
+
+# set row names to the name column
+row.names(cereals.df) <- cereals.df[,1]
+
+# remove the name column as a variable
+cereals.df <- cereals.df[,-1]
+
+```
+
+NORMALIZE THE DATA:
+
+```{r}
+# normalize all numeric variables (Columns 3 - 15)
+cereals.df.norm <- sapply(cereals.df[,c(3:15)], scale)
+
+# add row names: cereals
+row.names(cereals.df.norm) <- row.names(cereals.df)
+
+```
+
+APPLY HIERARCHICAL CLUSTERING USING AGNES AND FOUR LINKAGE MEASURES:
+
+Apply hierarchical clustering to the data using Euclidean distance to the normalized measurements.
+
+```{r}
+
+# load the cluster package so we can use agnes
+library(cluster) 
+
+# compute normalized distance based on all numeric variables
+d.norm <- dist(cereals.df.norm, method = "euclidean")
+
+hc_single <- agnes(d.norm, method = "single") # uses single linkage
+hc_complete <- agnes(d.norm, method = "complete") #uses complete linkage
+hc_average <- agnes(d.norm, method = "average") #uses average linkage
+hc_ward <- agnes(d.norm, method = "ward") #uses Ward's method
+
+```
+
+COMPARE AGGLOMERATIVE COEFFICIENTS
+```{r}
+
+print(hc_single$ac)
+print(hc_complete)
+print(hc_average)
+print(hc_ward)
+
+```
+
+COMPARE THE RESULTS:
+
+Compare the results of the Agglomerative coefficients (AC) of the four methods.
+
+Single Linkage (hc_single):
+AC = 0.6067859
+
+Complete Linkage (hc_complete):
+AC = 0.8353712
+
+Average Linkage (hc_average):
+AC = 0.7766075
+
+Ward's Method (hc_ward):
+AC = 0.9046042
+
+In comparing the Agglomerative coefficients (AC), we see Ward's Method is the best linkage method as it results in the highest Agglomeritve coefficient value.
+
+
+
+PLOT THE DENDROGRAM:
+
+To help answer the question of "how many clusters would you choose", let's first review the dendrogram using Ward's Method for hierarchical clustering since this proved to be the best linkage method.
+
+```{r}
+
+pltree(hc_ward, cex = 0.6, hang = -1, main = "Dendrogram of AGNES")
+
+```
+In reviewing the dendrogram, the cereals appear to fall logically into five (5) clusters by setting a cutoff of 12.
+
+Let's now visualize the five (5) clusters:
+
+```{r}
+
+pltree(hc_ward, cex = 0.6, hang = -1, main = "Dendrogram of AGNES")
+rect.hclust(hc_ward, k=5, border = 1:5)
+
+
+```
+
+
+COMPUTE CLUSTER MEMBERSHIP BY "CUTTING" THE DENDROGRAM
+
+```{r}
+
+memb <- cutree(hc_ward, k = 5)
+memb
+
+```
+
+
+CREATING A HEATMAP
+
+The following will create a heatmap for the 74 cereals (in rows). The rows are sorted by the five clusters from the Ward linkage clustering. Darker cells denote higher values within a column
+
+```{r}
+# set labels as cluster membership and cereal name
+row.names(cereals.df.norm) <- paste(memb, ": ", row.names(cereals.df), sep = "")
+
+# plot heatmap 
+# rev() reverses the color mapping to large = dark
+heatmap(as.matrix(cereals.df.norm), Colv = NA,  
+        col=rev(paste("gray",1:99,sep="")))
+
+```
+
+INTERPRETING THE DATA:
+
+In reviewing the 13 variables for all 74 cereals by cluster, we can identify the following cluster commonalities:
+
+Cluster 1: High in Fiber and Potassium with good customer satisfaction rating
+Cluster 2: High in Calories and Fat (and lowest in Vitamins)
+Cluster 3: High in Sugars and Calories
+Cluster 4: High in Carbohydrates ("Carbs") and slightly higher in Sodium
+Cluster 5: Higher in Protein, Fiber, Carbs, and Potassium and highest in Customer Satisfaction Rating 
+
+The elementary public schools would like to identify a group/cluster of "healthy cereals" to include in their daily cafeterias. To make this recommendation, we first need to understand which factors are desirable to consider a cereal "healthy". 
+
+A google search reveals "healthy cereals" should include:
+     * Whole grains
+     * High in Fiber, protein and nutrients/vitamins
+     * Carbs are a main source of energy and help fuel our brains and vital organs
+
+Based on our above interpretation of the five (5) clusters, the healthiest group of cereals is:
+
+     Cluster 5:
+     This cluster has higher levels of protein, fiber, carbs, and potassium while having the highest
+     customer satisfaction ratings. There are nine cereals in this grouping providing a good selection
+     of "healthy cereals" for elementary children.
+
+
+
+
+     
+
+
+
+
+
+
+
+
+
+
