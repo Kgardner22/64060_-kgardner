@@ -156,25 +156,30 @@ INTERPRETING THE DATA:
 
 In reviewing the 13 variables for all 74 cereals by cluster, we can identify the following cluster commonalities:
 
-Cluster 1: High in Fiber and Potassium with good customer satisfaction rating
-Cluster 2: High in Calories and Fat (and lowest in Vitamins)
-Cluster 3: High in Sugars and Calories
-Cluster 4: High in Carbohydrates ("Carbs") and slightly higher in Sodium
-Cluster 5: Higher in Protein, Fiber, Carbs, and Potassium and highest in Customer Satisfaction Rating 
+  Cluster 1: High in Fiber and Potassium with good customer satisfaction rating
+
+  Cluster 2: High in Calories and Fat (and lowest in Vitamins)
+
+  Cluster 3: High in Sugars and Calories
+
+  Cluster 4: High in Carbohydrates ("Carbs") and slightly higher in Sodium
+
+  Cluster 5: Higher in Protein, Fiber, Carbs, and Potassium and highest in Customer Satisfaction Rating 
 
 The elementary public schools would like to identify a group/cluster of "healthy cereals" to include in their daily cafeterias. To make this recommendation, we first need to understand which factors are desirable to consider a cereal "healthy". 
 
 A google search reveals "healthy cereals" should include:
+     
      * Whole grains
+     
      * High in Fiber, protein and nutrients/vitamins
+     
      * Carbs are a main source of energy and help fuel our brains and vital organs
 
 Based on our above interpretation of the five (5) clusters, the healthiest group of cereals is:
 
      Cluster 5:
-     This cluster has higher levels of protein, fiber, carbs, and potassium while having the highest
-     customer satisfaction ratings. There are nine cereals in this grouping providing a good selection
-     of "healthy cereals" for elementary children.
+     This cluster has higher levels of protein, fiber, carbs, and potassium while having the highest customer satisfaction ratings. There are nine cereals in this grouping providing a good selection of "healthy cereals"for elementary children.
 
 
 
