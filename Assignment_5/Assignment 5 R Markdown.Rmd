@@ -79,9 +79,9 @@ COMPARE AGGLOMERATIVE COEFFICIENTS
 ```{r}
 
 print(hc_single$ac)
-print(hc_complete)
-print(hc_average)
-print(hc_ward)
+print(hc_complete$ac)
+print(hc_average$ac)
+print(hc_ward$ac)
 
 ```
 
